@@ -29,13 +29,13 @@ def skapa_kortlek():
     
     for x in range(4):
         for z in range(13):
-            if z < 10:
+            if z < 9:
                 value = z + 2
-            elif z == 10:
+            elif z == 9:
                 value = "knekt"
-            elif z == 11:
+            elif z == 10:
                 value = "dam"
-            elif z == 12:
+            elif z == 11:
                 value = "kung"
             else:
                 value = "ess"
@@ -61,14 +61,13 @@ def spelare():
             antal_spelare = input("Fel format, skriv en siffra: ")
         
         
-    if 1 < antal_spelare < 9 :
-        for _ in range(antal_spelare):
-            namn = input("Skriv spelares namn: ")
-            while True:
-                if namn not in spelare:
-                    break
-                namn = input("Spelare finns redan, skriv ett annat namn: ")
-            spelare[namn] = []
+    for _ in range(antal_spelare):
+        namn = input("Skriv spelares namn: ")
+        while True:
+            if namn not in spelare:
+                break
+            namn = input("Spelare finns redan, skriv ett annat namn: ")
+        spelare[namn] = []
             
     return spelare
             
