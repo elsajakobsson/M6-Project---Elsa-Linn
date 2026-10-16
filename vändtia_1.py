@@ -1,5 +1,7 @@
 import random
 
+# Funkar det????
+
 red = "\033[91m"
 reset = "\033[0m"
 
