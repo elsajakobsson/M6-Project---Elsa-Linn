@@ -92,10 +92,28 @@ def possible_to_play(card, played_pile):
         return True
     return False
 
+
 def is_winner(players, player):
+    '''Returns True if chosen card can be played, otherwise False'''
     if number_in_hand(players, player) == 0:
         return True
     return False
-    
+
+
+def menu():
+    '''Shows options for player when it's their turn'''
+    print()
+    print("These are your options: ")
+    options = [{"1": "Play a card"}, {"2": "Gamble"}, {"3": "Take the played pile"}]
+    for number, choice in options.items():
+        print(f"     {number}) {choice}")
+    print()
+    while True:
+        chosen = input("What do you want to do?: ")
+        if chosen in options:
+            print()
+            return chosen
+
+        
 kort = stock()
 #player = players()
