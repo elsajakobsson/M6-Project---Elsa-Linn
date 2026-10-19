@@ -24,14 +24,14 @@ def splash():
 def stock(special_cards = 0):
     '''Returns a list with 52 cards in random order'''
     new_stock = []
-    for value in [2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K", "A"]:
+    for value in [(2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (10, 10), (11, "J"), (12, "Q"), (13, "K"), (14, "A")]:
         for suit in [spade, club, heart, diamond]:
             new_stock.append((value, suit))
     random.shuffle(new_stock)
     return new_stock
 
 
-def discard_pile():
+def played_pile():
     '''Returns an empty list for storing played cards'''
     return []
 
@@ -80,8 +80,22 @@ def view(players, player):
     print()
     print("These are your cards: ")
     for index, card in enumerate(players[player]):
-        card_string = f"{card[0]}{card[1]}"
+        card_string = f"{card[0][1]}{card[1]}"
         if index % 5 == 0:
             print()
         print(f"{card_string:>10}", end="")
     print()
+    
+
+def possible_to_play(card, played_pile):
+    if card[0][0] >= played_pile[-1][0][0]:
+        return True
+    return False
+
+def is_winner(players, player):
+    if number_in_hand(players, player) == 0:
+        return True
+    return False
+    
+kort = stock()
+#player = players()
