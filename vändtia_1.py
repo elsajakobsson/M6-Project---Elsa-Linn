@@ -88,13 +88,14 @@ def view(players, player):
     
 
 def possible_to_play(card, played_pile):
+    '''Returns True if chosen card can be played, otherwise False'''
     if card[0][0] >= played_pile[-1][0][0]:
         return True
     return False
 
 
 def is_winner(players, player):
-    '''Returns True if chosen card can be played, otherwise False'''
+    '''Returns True if the player has 0 cards in their hand, otherwise False'''
     if number_in_hand(players, player) == 0:
         return True
     return False
