@@ -159,6 +159,22 @@ def play_a_card(players, player, stock_of_cards, played_pile):
     deal_cards(stock_of_cards, players, player)
     return is_winner(players, player)
 
+
+def my_turn(players, player, stock_of cards, played_pile):
+    view_played_pile(played_pile)
+    view_cards(players, player)
+    chosen = menu()
+    if chosen == "1":
+        winner = play_a_card(players, player, stock_of_cards, played_pile)
+        if winner:
+            return player
+    elif chosen == "2":
+        gamble = gamble(players, player, played_pile, stock_of cards)
+        if gamble == 0:
+            my_turn(players, player, stock_of cards, played_pile)
+    else:
+        take_played_pile(players, player, played_pile)
+        
         
 stock = stock()
 played_pile = [((5, 5), '♦'), ((6, 6), '♦'), ((5, 5), '♥'), ((14, 'A'), '♣')]
