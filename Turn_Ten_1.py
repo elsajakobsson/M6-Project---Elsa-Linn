@@ -81,7 +81,7 @@ def view_cards(players, player):
     print()
     print("These are your cards: ")
     for index, card in enumerate(players[player]):
-        card_string = f"{card[0][1]}{card[1]}"
+        card_string = f"{index + 1}: {card[0][1]}{card[1]}"
         if index % 5 == 0:
             print()
         print(f"{card_string:>10}", end="")
@@ -120,6 +120,22 @@ def menu():
         if chosen in options:
             print()
             return chosen
+        
+def take_played_pile(player, played_pile):
+    for _ in range(len(played_pile)):
+        player.append(played_pile.pop())
+        
+def gamble(player, played_pile, stock):
+    card = stock.pop()
+    print(f"gamble card: {card[0][1]}{card[1]}")
+    if card == None:
+        print("No cards left, you can´t gamble")
+        return 0
+    if not possible_to_play(card, played_pile):
+        print(f"You needed to take the played pile since {played_pile[-1][0][1]}{played_pile[-1][1]} is higher than the gamble card")
+        played_pile.append(card)
+        take_played_pile(player, played_pile)
+        
 
 
 def pick_a_card(players, player):
@@ -144,6 +160,8 @@ def play_a_card(players, player, stock_of_cards, played_pile):
     return is_winner(players, player)
 
         
-kort = stock()
+stock = stock()
+played_pile = [((5, 5), '♦'), ((6, 6), '♦'), ((5, 5), '♥'), ((14, 'A'), '♣')]
+player = [((7, 7), '♦'), ((3, 3), '♦'), ((10, 10), '♥')]
 #player = players()
 
