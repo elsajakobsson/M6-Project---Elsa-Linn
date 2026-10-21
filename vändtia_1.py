@@ -21,6 +21,7 @@ def splash():
     print()
 
 
+# Format for card ((number, number/"letter"), "unicode")    
 def stock(special_cards = 0):
     '''Returns a list with 52 cards in random order'''
     new_stock = []
@@ -75,7 +76,7 @@ def deal_cards(stock_of_cards, players, player):
             players[player].append(moving_card)
 
 
-def view(players, player):
+def view_cards(players, player):
     '''Shows the cards in the player's hand'''
     print()
     print("These are your cards: ")
@@ -85,6 +86,11 @@ def view(players, player):
             print()
         print(f"{card_string:>10}", end="")
     print()
+
+
+def view_played_pile(played_pile):
+    '''Shows the top card in the played pile'''
+    print(f"Played pile: {played_pile[-1][0][1]}{played_pile[-1][1]}")
     
 
 def possible_to_play(card, played_pile):
@@ -115,6 +121,29 @@ def menu():
             print()
             return chosen
 
+
+def pick_a_card(players, player):
+    '''Asks the player to choose a card from their hand, and returns the index of the chosen card'''
+    view_cards(players, player)
+    while True:
+        number = int(input("Which card do you want to play? (the index number): "))
+        if number in list(range(1, len(players[player]) + 1)):
+            return number - 1
+
+
+def play_a_card(players, player, stock_of_cards, played_pile):
+    '''Plays the card that the player has chosen,
+       returns True if the player has won otherwise False'''
+    picked_card = pick_a_card(players, player)
+    if not possible_to_play(picked_card, played_pile):
+        # anropa take_played_pile
+        return
+    moving_card = players[player].pop(picked_card)
+    played_pile.append(moving_card)
+    deal_cards(stock_of_cards, players, player)
+    return is_winner(players, player)
+
         
 kort = stock()
 #player = players()
+
