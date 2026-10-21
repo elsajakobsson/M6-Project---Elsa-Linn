@@ -121,11 +121,11 @@ def menu():
             print()
             return chosen
         
-def take_played_pile(player, played_pile):
+def take_played_pile(players, player, played_pile):
     for _ in range(len(played_pile)):
-        player.append(played_pile.pop())
+        players[player].append(played_pile.pop())
         
-def gamble(player, played_pile, stock):
+def gamble(players, player, played_pile, stock):
     card = stock.pop()
     print(f"gamble card: {card[0][1]}{card[1]}")
     if card == None:
@@ -134,7 +134,7 @@ def gamble(player, played_pile, stock):
     if not possible_to_play(card, played_pile):
         print(f"You needed to take the played pile since {played_pile[-1][0][1]}{played_pile[-1][1]} is higher than the gamble card")
         played_pile.append(card)
-        take_played_pile(player, played_pile)
+        take_played_pile(players, player, played_pile)
         
 
 
@@ -152,7 +152,7 @@ def play_a_card(players, player, stock_of_cards, played_pile):
        returns True if the player has won otherwise False'''
     picked_card = pick_a_card(players, player)
     if not possible_to_play(picked_card, played_pile):
-        # anropa take_played_pile
+        take_played_pile(players, player, played_pile)
         return
     moving_card = players[player].pop(picked_card)
     played_pile.append(moving_card)
