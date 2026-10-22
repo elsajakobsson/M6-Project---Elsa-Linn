@@ -203,7 +203,7 @@ def my_turn(players, player, stock_of_cards, played_pile):
 def main():
     while True:
         splash()
-        stock_of_cards = [((5, 5), '♦'), ((6, 6), '♦'), ((5, 5), '♥'), ((5, 5), '♦'), ((6, 6), '♦'), ((5, 5), '♥')] #stock()
+        stock_of_cards = stock()
         Played_pile = played_pile()
         Players = players()
         for player in Players:
