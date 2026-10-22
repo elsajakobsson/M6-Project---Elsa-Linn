@@ -70,6 +70,8 @@ def number_in_hand(players, player):
 
 def deal_cards(stock_of_cards, players, player):
     '''Adds cards to player's hand until player has at least 3 cards'''
+    if len(stock_of_cards) == 0:
+        return
     while len(players[player]) < 3:
         if len(stock_of_cards) > 0:
             moving_card = stock_of_cards.pop()
@@ -91,12 +93,17 @@ def view_cards(players, player):
 def view_played_pile(played_pile):
     '''Shows the top card in the played pile'''
     print()
+    if len(played_pile) == 0:
+        print("Played pile: empty, add the first card")
+        return
     print(f"Played pile: {played_pile[-1][0][1]}{played_pile[-1][1]}")
     print()
     
 
 def possible_to_play(card, played_pile):
     '''Returns True if chosen card can be played, otherwise False'''
+    if len(played_pile) == 0:
+        return True
     if card[0][0] >= played_pile[-1][0][0]:
         return True
     return False
@@ -109,13 +116,15 @@ def is_winner(players, player):
     return False
 
 
-def menu():
+def menu(played_pile):
     '''Shows options for player when it's their turn'''
     print()
     print("These are your options: ")
-    options = [{"1": "Play a card"}, {"2": "Gamble"}, {"3": "Take the played pile"}]
-    for number, choice in options.items():
-        print(f"     {number}) {choice}")
+    options = {"1":"Play a card", "2":"Gamble", "3":"Take the played pile"}
+    if len(played_pile) == 0:
+        options.pop("3")
+    for option in options:
+        print(f"     {option}) {options[option]}")
     print()
     while True:
         chosen = input("What do you want to do?: ")
@@ -133,21 +142,23 @@ def take_played_pile(players, player, played_pile):
 def gamble(players, player, played_pile, stock):
     '''Takes the top card from the stock and tries to play it,
        if not possible the player takes up the played pile'''
-    card = stock.pop()
-    if card == None:
+    if len(stock) == 0:
         print("No cards left, you can´t gamble")
         return 0
     
+    card = stock.pop()
+    
     print(f"Gamble card: {card[0][1]}{card[1]}")
-    played_pile.append(card)
     if not possible_to_play(card, played_pile):
+        played_pile.append(card)
         print(f"You needed to take the played pile since {played_pile[-1][0][1]}{played_pile[-1][1]} is higher than the gamble card")
         take_played_pile(players, player, played_pile)
+    else:
+        played_pile.append(card)
         
 
 def pick_a_card(players, player):
     '''Asks the player to choose a card from their hand, and returns the index (starting from 0) of the chosen card'''
-    view_cards(players, player)
     while True:
         number = int(input("Which card do you want to play? (the index number): "))
         if number in list(range(1, len(players[player]) + 1)):
@@ -158,7 +169,7 @@ def play_a_card(players, player, stock_of_cards, played_pile):
     '''Plays the card that the player has chosen,
        returns True if the player has won otherwise False'''
     picked_card = pick_a_card(players, player)
-    if not possible_to_play(picked_card, played_pile):
+    if not possible_to_play(players[player][picked_card], played_pile):
         take_played_pile(players, player, played_pile)
         print("You needed to take up the pile since the card you chose couldn't be played")
         return
@@ -168,23 +179,23 @@ def play_a_card(players, player, stock_of_cards, played_pile):
     return is_winner(players, player)
 
 
-def my_turn(players, player, stock_of cards, played_pile):
+def my_turn(players, player, stock_of_cards, played_pile):
     '''Controls the actions of a player when it's their turn'''
     print()
     print(f"It's your turn, {player}!")
     print()
     view_played_pile(played_pile)
     view_cards(players, player)
-    chosen = menu()
+    chosen = menu(played_pile)
     if chosen == "1":
         winner = play_a_card(players, player, stock_of_cards, played_pile)
         if winner:
             return player # If my_turn returns a name, this player has won
     elif chosen == "2":
-        gamble = gamble(players, player, played_pile, stock_of cards)
-        if gamble == 0:
+        Gamble = gamble(players, player, played_pile, stock_of_cards)
+        if Gamble == 0:
             print(f"Try to do something else!")
-            my_turn(players, player, stock_of cards, played_pile)
+            my_turn(players, player, stock_of_cards, played_pile)
     else:
         take_played_pile(players, player, played_pile)
 
@@ -192,29 +203,33 @@ def my_turn(players, player, stock_of cards, played_pile):
 def main():
     while True:
         splash()
-        stock = stock()
-        played_pile = played_pile()
-        players = players()
-        for player in players:
-            deal_cards(stock, players, player)
+        stock_of_cards = [((5, 5), '♦'), ((6, 6), '♦'), ((5, 5), '♥'), ((5, 5), '♦'), ((6, 6), '♦'), ((5, 5), '♥')] #stock()
+        Played_pile = played_pile()
+        Players = players()
+        for player in Players:
+            deal_cards(stock_of_cards, Players, player)
         while True:
-            for player in players:
-                winner = my_turn(players, player, stock, played_pile)
-                if winner not None:
+            for player in Players:
+                winner = my_turn(Players, player, stock_of_cards, Played_pile)
+                if winner != None:
                     break
+            if winner != None:
+                break
+        print()
         print(f"{winner} is the winner!!")
+        print()
         while True:
             play_again = input("Do you want to play again, (y/n)?: ")
-                if play_again == "n" or play_again == "y":
-                    break
-                print("Wrong format, answer with 'y' or 'n'")
-        if play_again = "n":
+            if play_again == "n" or play_again == "y":
+                break
+            print("Wrong format, answer with 'y' or 'n'")
+        if play_again == "n":
             break
         
         
-stock = stock()
-played_pile = [((5, 5), '♦'), ((6, 6), '♦'), ((5, 5), '♥'), ((14, 'A'), '♣')]
-player = [((7, 7), '♦'), ((3, 3), '♦'), ((10, 10), '♥')]
+#stock = stock()
+#played_pile = [((5, 5), '♦'), ((6, 6), '♦'), ((5, 5), '♥'), ((14, 'A'), '♣')]
+#player = [((7, 7), '♦'), ((3, 3), '♦'), ((10, 10), '♥')]
 #player = players()
 
 
