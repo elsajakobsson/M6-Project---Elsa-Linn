@@ -90,7 +90,9 @@ def view_cards(players, player):
 
 def view_played_pile(played_pile):
     '''Shows the top card in the played pile'''
+    print()
     print(f"Played pile: {played_pile[-1][0][1]}{played_pile[-1][1]}")
+    print()
     
 
 def possible_to_play(card, played_pile):
@@ -120,26 +122,31 @@ def menu():
         if chosen in options:
             print()
             return chosen
-        
+
+
 def take_played_pile(players, player, played_pile):
+    '''Removes all cards from the played pile and adds them to the player's hand'''
     for _ in range(len(played_pile)):
         players[player].append(played_pile.pop())
-        
+
+
 def gamble(players, player, played_pile, stock):
+    '''Takes the top card from the stock and tries to play it,
+       if not possible the player takes up the played pile'''
     card = stock.pop()
-    print(f"gamble card: {card[0][1]}{card[1]}")
     if card == None:
         print("No cards left, you can´t gamble")
         return 0
+    
+    print(f"Gamble card: {card[0][1]}{card[1]}")
+    played_pile.append(card)
     if not possible_to_play(card, played_pile):
         print(f"You needed to take the played pile since {played_pile[-1][0][1]}{played_pile[-1][1]} is higher than the gamble card")
-        played_pile.append(card)
         take_played_pile(players, player, played_pile)
         
 
-
 def pick_a_card(players, player):
-    '''Asks the player to choose a card from their hand, and returns the index of the chosen card'''
+    '''Asks the player to choose a card from their hand, and returns the index (starting from 0) of the chosen card'''
     view_cards(players, player)
     while True:
         number = int(input("Which card do you want to play? (the index number): "))
@@ -153,6 +160,7 @@ def play_a_card(players, player, stock_of_cards, played_pile):
     picked_card = pick_a_card(players, player)
     if not possible_to_play(picked_card, played_pile):
         take_played_pile(players, player, played_pile)
+        print("You needed to take up the pile since the card you chose couldn't be played")
         return
     moving_card = players[player].pop(picked_card)
     played_pile.append(moving_card)
@@ -161,16 +169,21 @@ def play_a_card(players, player, stock_of_cards, played_pile):
 
 
 def my_turn(players, player, stock_of cards, played_pile):
+    '''Controls the actions of a player when it's their turn'''
+    print()
+    print(f"It's your turn, {player}!")
+    print()
     view_played_pile(played_pile)
     view_cards(players, player)
     chosen = menu()
     if chosen == "1":
         winner = play_a_card(players, player, stock_of_cards, played_pile)
         if winner:
-            return player
+            return player # If my_turn returns a name, this player has won
     elif chosen == "2":
         gamble = gamble(players, player, played_pile, stock_of cards)
         if gamble == 0:
+            print(f"Try to do something else!")
             my_turn(players, player, stock_of cards, played_pile)
     else:
         take_played_pile(players, player, played_pile)
@@ -180,4 +193,6 @@ stock = stock()
 played_pile = [((5, 5), '♦'), ((6, 6), '♦'), ((5, 5), '♥'), ((14, 'A'), '♣')]
 player = [((7, 7), '♦'), ((3, 3), '♦'), ((10, 10), '♥')]
 #player = players()
+
+
 
