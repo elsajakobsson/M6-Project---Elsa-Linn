@@ -187,6 +187,29 @@ def my_turn(players, player, stock_of cards, played_pile):
             my_turn(players, player, stock_of cards, played_pile)
     else:
         take_played_pile(players, player, played_pile)
+
+
+def main():
+    while True:
+        splash()
+        stock = stock()
+        played_pile = played_pile()
+        players = players()
+        for player in players:
+            deal_cards(stock, players, player)
+        while True:
+            for player in players:
+                winner = my_turn(players, player, stock, played_pile)
+                if winner not None:
+                    break
+        print(f"{winner} is the winner!!")
+        while True:
+            play_again = input("Do you want to play again, (y/n)?: ")
+                if play_again == "n" or play_again == "y":
+                    break
+                print("Wrong format, answer with 'y' or 'n'")
+        if play_again = "n":
+            break
         
         
 stock = stock()
