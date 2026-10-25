@@ -150,8 +150,8 @@ def gamble(players, player, played_pile, stock):
     
     print(f"Gamble card: {card[0][1]}{card[1]}")
     if not possible_to_play(card, played_pile):
-        played_pile.append(card)
         print(f"You needed to take the played pile since {played_pile[-1][0][1]}{played_pile[-1][1]} is higher than the gamble card")
+        played_pile.append(card)
         take_played_pile(players, player, played_pile)
     else:
         played_pile.append(card)
@@ -198,6 +198,7 @@ def my_turn(players, player, stock_of_cards, played_pile):
             my_turn(players, player, stock_of_cards, played_pile)
     else:
         take_played_pile(players, player, played_pile)
+    print("~" * 50)
 
 
 def main():
@@ -222,7 +223,7 @@ def main():
             play_again = input("Do you want to play again, (y/n)?: ")
             if play_again == "n" or play_again == "y":
                 break
-            print("Wrong format, answer with 'y' or 'n'")
+            print("Wrong format, answer with 'y' or 'n': ")
         if play_again == "n":
             break
         
@@ -231,6 +232,4 @@ def main():
 #played_pile = [((5, 5), '♦'), ((6, 6), '♦'), ((5, 5), '♥'), ((14, 'A'), '♣')]
 #player = [((7, 7), '♦'), ((3, 3), '♦'), ((10, 10), '♥')]
 #player = players()
-
-
 
