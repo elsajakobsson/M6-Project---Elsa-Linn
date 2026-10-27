@@ -38,8 +38,10 @@ def played_pile():
     return []
 
 
+# Format for player dictionary {"name":([cards in hand], [secret cards])}
 def players():
-    '''Returns a dictionary with player names and empty lists for cards in hand'''
+    '''Returns a dictionary with player name and a tuple with two empty lists,
+       one for cards in hand and one for secret cards'''
     players = {}
     print()
     number_of_players = input("Number of players: ")
@@ -59,32 +61,52 @@ def players():
         name = input("Player's name: ")
         while name in players:
             name = input("Player already exists, write a new name: ")
-        players[name] = []
+        players[name] = [], []
     
     return players
 
 
 def number_in_hand(players, player):
     '''Takes a player dictionary and a player name, returns the number of cards in the player's hand'''
-    return len(players[player])
+    return len(players[player][0])
 
 
 def deal_cards(stock_of_cards, players, player):
     '''Adds cards to player's hand until player has at least 3 cards'''
     if len(stock_of_cards) == 0:
         return
-    while len(players[player]) < 3:
+    while len(players[player][0]) < 3:
         if len(stock_of_cards) > 0:
             moving_card = stock_of_cards.pop()
-            players[player].append(moving_card)
+            players[player][0].append(moving_card)
+
+
+def deal_secret_cards(stock_of_cards, players):
+    '''Deals 3 secret cards to each player'''
+    for _ in range(3):
+        for player in players:
+            moving_card = stock_of_cards.pop()
+            players[player][1].append(moving_card)
 
 
 def view_cards(players, player):
     '''Shows the cards in the player's hand'''
     print()
     print("These are your cards: ")
-    for index, card in enumerate(players[player]):
-        card_string = f"{index + 1}: {card[0][1]}{card[1]}"
+    for index, card in enumerate(players[player][0]):
+        card_string = f"{index + 1:>8}: {card[0][1]:>2}{card[1]}"
+        if index % 5 == 0:
+            print()
+        print(f"{card_string}", end="")
+    print()
+
+
+def view_secret_cards(players, player):
+    '''Shows representation of the player's secret cards laying upside down'''
+    print()
+    print("These are your secret cards: ")
+    for index, card in enumerate(players[player][1]):
+        card_string = f"{index + 1}: ?"
         if index % 5 == 0:
             print()
         print(f"{card_string:>10}", end="")
@@ -97,7 +119,7 @@ def view_played_pile(played_pile):
     if len(played_pile) == 0:
         print("Played pile: empty, add the first card")
         return
-    print(f"Played pile: {played_pile[-1][0][1]}{played_pile[-1][1]}")
+    print(f"Top of played pile: {played_pile[-1][0][1]}{played_pile[-1][1]}")
     print()
     
 
@@ -112,20 +134,31 @@ def possible_to_play(card, played_pile):
     return False
 
 
-def is_winner(players, player):
-    '''Returns True if the player has 0 cards in their hand, otherwise False'''
+def play_secret(players, player):
+    '''Returns True if the player has 0 cards in their hand,
+       and if so the player can start playing their secret cards'''
     if number_in_hand(players, player) == 0:
         return True
     return False
 
 
-def menu(played_pile):
-    '''Shows options for player when it's their turn'''
+def is_winner(players, player): 
+    '''Returns True if the player has 0 cards in their hand
+       and 0 secret cards left'''
+    if number_in_hand(players, player) == 0 and len(players[player][1]) == 0:
+        return True
+    return False
+
+
+def menu(played_pile, stock):
+    '''Shows options for player who has to play cards in hand when it's their turn'''
     print()
     print("These are your options: ")
     options = {"1":"Play a card", "2":"Gamble", "3":"Take the played pile"}
-    if len(played_pile) == 0:
+    if len(played_pile) == 0: 
         options.pop("3")
+    if len(stock) == 0: 
+        options.pop("2")
     for option in options:
         print(f"     {option}) {options[option]}")
     print()
@@ -139,12 +172,13 @@ def menu(played_pile):
 def take_played_pile(players, player, played_pile):
     '''Removes all cards from the played pile and adds them to the player's hand'''
     for _ in range(len(played_pile)):
-        players[player].append(played_pile.pop())
+        players[player][0].append(played_pile.pop())
 
 
 def gamble(players, player, played_pile, stock):
     '''Takes the top card from the stock and tries to play it,
-       if not possible the player takes up the played pile'''
+       if not possible the player takes up the played pile,
+       returns 0 if there are no cards left in the stock to gamble'''
     if len(stock) == 0:
         print("No cards left, you can´t gamble")
         return 0
@@ -163,56 +197,86 @@ def gamble(players, player, played_pile, stock):
         played_pile.append(card)
           
 
-def pick_a_card(players, player):
-    '''Asks the player to choose a card from their hand, and returns the index (starting from 0) of the chosen card'''
+def pick_a_card(players, player, secret_cards = False):
+    '''Asks the player to choose a card,
+       and returns the index (starting from 0) of the chosen card'''
+    if secret_cards:
+        while True:
+            number = int(input("Which card do you want to play? (the index number): "))
+            if number in list(range(1, len(players[player][1]) + 1)):
+                return number - 1
     while True:
         number = int(input("Which card do you want to play? (the index number): "))
-        if number in list(range(1, len(players[player]) + 1)):
+        if number in list(range(1, len(players[player][0]) + 1)):
             return number - 1
 
 
 def play_a_card(players, player, stock_of_cards, played_pile):
-    '''Plays the card that the player has chosen,
-       returns True if the player has won otherwise False'''
+    '''Plays the card from the hand that the player has chosen,
+       returns None if the card can't be played,
+       returns True if the player can start playing their secret cards
+       and False if the player still has cards in their hand'''
     picked_card = pick_a_card(players, player)
-    if not possible_to_play(players[player][picked_card], played_pile):
+    if not possible_to_play(players[player][0][picked_card], played_pile):
         take_played_pile(players, player, played_pile)
         print("You needed to take up the pile since the card you chose couldn't be played")
         return
-    moving_card = players[player].pop(picked_card)
+    moving_card = players[player][0].pop(picked_card)
     played_pile.append(moving_card)
     if moving_card[0][0] == 10:
         played_pile.clear()
         print("10 was played, the playing pile is now empty")
         
     deal_cards(stock_of_cards, players, player)
-    if is_winner(players, player):
-        return is_winner(players, player)
     if moving_card[0][0] == 10 or moving_card[0][0] == 2:
+        if is_winner(players, player):
+            return True
         my_turn(players, player, stock_of_cards, played_pile)
-    else:
-        return False
 
+
+def play_secret_card(players, player, played_pile):
+    '''Plays the secret card that the player has chosen,
+       returns None if the card can't be played,
+       returns True if the player has won and False if the player hasn't won'''
+    picked_card = pick_a_card(players, player, True)
+    if not possible_to_play(players[player][1][picked_card], played_pile):
+        take_played_pile(players, player, played_pile)
+        print("You needed to take up the pile since the card you chose couldn't be played")
+        return
+    moving_card = players[player][1].pop(picked_card)
+    played_pile.append(moving_card)
+    return is_winner(players, player)
+    
 
 def my_turn(players, player, stock_of_cards, played_pile):
-    '''Controls the actions of a player when it's their turn'''
+    '''Controls the actions of a player when it's their turn,
+       returns player name if the player has won, otherwise None'''
     print()
     print(f"{bold}It's your turn, {player}!{reset}")
     view_played_pile(played_pile)
-    view_cards(players, player)
-    chosen = menu(played_pile)
-    if chosen == "1":
-        winner = play_a_card(players, player, stock_of_cards, played_pile)
-        if winner:
-            return player # If my_turn returns a name, this player has won
-    elif chosen == "2":
-        Gamble = gamble(players, player, played_pile, stock_of_cards)
-        if Gamble == 0:
-            print(f"Try to do something else!")
-            my_turn(players, player, stock_of_cards, played_pile)
+    
+    # If the player has an empty hand and can start playing the secret cards
+    if play_secret(players, player):
+        view_secret_cards(players, player)
+        # When playing the secret cards, the player has to "Play a card"
+        play_secret_card(players, player, played_pile)
+    
+    # If the player still has cards in their hand to be played
     else:
-        take_played_pile(players, player, played_pile)
-    print("~" * 50)
+        view_cards(players, player)
+        chosen = menu(played_pile, stock_of_cards)
+        if chosen == "1":
+            play_a_card(players, player, stock_of_cards, played_pile)
+        elif chosen == "2":
+            Gamble = gamble(players, player, played_pile, stock_of_cards)
+            if Gamble == 0:
+                print(f"Try to do something else!")
+                my_turn(players, player, stock_of_cards, played_pile)
+        else:
+            take_played_pile(players, player, played_pile)
+    
+    if is_winner(players, player):
+        return player
 
 
 def main():
@@ -223,9 +287,11 @@ def main():
         Players = players()
         for player in Players:
             deal_cards(stock_of_cards, Players, player)
+        deal_secret_cards(stock_of_cards, Players)
         while True:
             for player in Players:
                 winner = my_turn(Players, player, stock_of_cards, Played_pile)
+                print("~" * 50)
                 if winner != None:
                     break
             if winner != None:
@@ -242,10 +308,5 @@ def main():
             break
         
 main()
-        
-        
-#stock = stock()
-#played_pile = [((5, 5), '♦'), ((6, 6), '♦'), ((5, 5), '♥'), ((14, 'A'), '♣')]
-#player = [((7, 7), '♦'), ((3, 3), '♦'), ((10, 10), '♥')]
-#player = players()
+
 
