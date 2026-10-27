@@ -2,6 +2,7 @@ import random
 
 red = "\033[91m"
 reset = "\033[0m"
+bold = "\033[1m"
 
 heart = "\U00002665"
 diamond = "\U00002666"
@@ -104,6 +105,8 @@ def possible_to_play(card, played_pile):
     '''Returns True if chosen card can be played, otherwise False'''
     if len(played_pile) == 0:
         return True
+    if card[0][0] == 2 or card[0][0] == 10 :
+        return True
     if card[0][0] >= played_pile[-1][0][0]:
         return True
     return False
@@ -153,9 +156,12 @@ def gamble(players, player, played_pile, stock):
         print(f"You needed to take the played pile since {played_pile[-1][0][1]}{played_pile[-1][1]} is higher than the gamble card")
         played_pile.append(card)
         take_played_pile(players, player, played_pile)
+    elif card[0][0] == 10:
+        played_pile.clear()
+        print("10 was played, the playing pile is now empty")
     else:
         played_pile.append(card)
-        
+          
 
 def pick_a_card(players, player):
     '''Asks the player to choose a card from their hand, and returns the index (starting from 0) of the chosen card'''
@@ -175,15 +181,23 @@ def play_a_card(players, player, stock_of_cards, played_pile):
         return
     moving_card = players[player].pop(picked_card)
     played_pile.append(moving_card)
+    if moving_card[0][0] == 10:
+        played_pile.clear()
+        print("10 was played, the playing pile is now empty")
+        
     deal_cards(stock_of_cards, players, player)
-    return is_winner(players, player)
+    if is_winner(players, player):
+        return is_winner(players, player)
+    if moving_card[0][0] == 10 or moving_card[0][0] == 2:
+        my_turn(players, player, stock_of_cards, played_pile)
+    else:
+        return False
 
 
 def my_turn(players, player, stock_of_cards, played_pile):
     '''Controls the actions of a player when it's their turn'''
     print()
-    print(f"It's your turn, {player}!")
-    print()
+    print(f"{bold}It's your turn, {player}!{reset}")
     view_played_pile(played_pile)
     view_cards(players, player)
     chosen = menu(played_pile)
@@ -226,6 +240,8 @@ def main():
             print("Wrong format, answer with 'y' or 'n': ")
         if play_again == "n":
             break
+        
+main()
         
         
 #stock = stock()
