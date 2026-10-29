@@ -207,9 +207,7 @@ def pick_a_card(players, player, secret_cards = False):
 
 
 def play_a_card(players, player, stock_of_cards, played_pile):
-    '''Plays the card from the hand that the player has chosen,
-       returns None if the card can't be played,
-       returns True if the player has won after having played 10 or 2'''
+    '''Plays the card from the hand that the player has chosen'''
     picked_card = pick_a_card(players, player)
     
     if not possible_to_play(players[player][0][picked_card], played_pile):
@@ -227,7 +225,7 @@ def play_a_card(players, player, stock_of_cards, played_pile):
     
     if moving_card[0][0] == 10 or moving_card[0][0] == 2:
         if is_winner(players, player):
-            return True
+            return 
         my_turn(players, player, stock_of_cards, played_pile)
 
 
