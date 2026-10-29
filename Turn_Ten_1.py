@@ -1,6 +1,5 @@
 import random 
 
-red = "\033[91m"
 reset = "\033[0m"
 bold = "\033[1m"
 
@@ -77,9 +76,8 @@ def deal_cards(stock_of_cards, players, player):
     if len(stock_of_cards) == 0:
         return
     while number_in_hand(players, player) < 3:
-        if len(stock_of_cards) > 0:
-            moving_card = stock_of_cards.pop()
-            players[player][0].append(moving_card)
+        moving_card = stock_of_cards.pop()
+        players[player][0].append(moving_card)
 
 
 def deal_secret_cards(stock_of_cards, players):
@@ -153,17 +151,17 @@ def menu(played_pile, stock):
     '''Shows options for player playing cards in hand when it's their turn'''
     print()
     print("These are your options: ")
-    options = {"1":"Play a card", "2":"Gamble", "3":"Take the played pile"}
+    options = ["Play a card", "Gamble", "Take the played pile"]
     if len(played_pile) == 0: 
-        options.pop("3")
+        options.pop(2)
     if len(stock) == 0: 
-        options.pop("2")
+        options.pop(1)
     for option in options:
-        print(f"     {option}) {options[option]}")
+        print(f"     {options.index(option) + 1}) {option}")
     print()
     while True:
-        chosen = input("What do you want to do?: ")
-        if chosen in options:
+        chosen = int(input("What do you want to do?: "))
+        if chosen in list(range(1, len(options) + 1)):
             print()
             return chosen
 
@@ -191,8 +189,6 @@ def gamble(players, player, played_pile, stock):
         played_pile.append(card)
     
     if card[0][0] == 10 or card[0][0] == 2:
-        if is_winner(players, player):
-            return 
         my_turn(players, player, stock, played_pile)
           
 
@@ -278,9 +274,9 @@ def my_turn(players, player, stock_of_cards, played_pile):
     else:
         view_cards(players, player)
         chosen = menu(played_pile, stock_of_cards)
-        if chosen == "1":
+        if chosen == 1:
             play_a_card(players, player, stock_of_cards, played_pile)
-        elif chosen == "2":
+        elif chosen == 2:
             gamble(players, player, played_pile, stock_of_cards)
         else:
             take_played_pile(players, player, played_pile)
